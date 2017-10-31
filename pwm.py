@@ -1,20 +1,11 @@
 import Adafruit_BBIO.PWM as PWM
- 
-servo_pin = "P8_13"
-duty_min = 3
-duty_max = 14.5
-duty_span = duty_max - duty_min
- 
-PWM.start(servo_pin, 50, 1000, 1)
-#PWM.start(servo_pin, 50)
-#PWM.start(servo_pin, (100-duty_min), 60.0)
- 
-while True:
-    angle = raw_input("Angle (0 to 180 x to exit):")
-    if angle == 'x':
-        PWM.stop(servo_pin)
-        PWM.cleanup()
-        break
-    angle_f = float(angle)
-    duty = 100 - ((angle_f / 180) * duty_span + duty_min) 
-    PWM.set_duty_cycle(servo_pin, duty)
+import time
+
+pin1 = "P9_14"
+
+PWM.start(pin1, 30, 4000)
+
+time.sleep(5)
+
+PWM.stop(pin1)
+PWM.cleanup()
