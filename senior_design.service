@@ -1,0 +1,10 @@
+[Unit]
+Description=This is a service to auto-start our senior design, followme robot
+After=syslog.target network.target
+[Service]
+User=root
+Group=root
+Type=simple
+ExecStart=/var/lib/cloud9/followme/startup.sh
+[Install]
+WantedBy=multi-user.target
