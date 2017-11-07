@@ -1,6 +1,7 @@
 import Adafruit_BBIO.UART as UART
 import serial
 import time
+import math
 
 UART.setup("UART1") # P9_24
 
@@ -48,21 +49,24 @@ def DriveStraight(speed):
     
     SetMultiTarget(target0, target1)
     
-def TurnInPlace(degree, speed):
-    target0 = CENTER0 + speed # 1485 micro seconds is median
+def TurnInPlace(degree, speed=50):
+    target0 = CENTER0 + speed if degree >= 0 else CENTER0 - speed # 1485 micro seconds is median
     target0 = int(target0 * 4) # convert to quarter micro-seconds
     target0= ''.join([chr(target0 & 0x7F), chr((target0 >> 7) & 0x7F)])
     
-    target1 = CENTER1 + speed # 1485 micro seconds is median
+    target1 = CENTER1 + speed if degree >=0 else CENTER1 - speed # 1485 micro seconds is median
     target1 = int(target1 * 4) # convert to quarter micro-seconds
     target1= ''.join([chr(target1 & 0x7F), chr((target1 >> 7) & 0x7F)])
     
     SetMultiTarget(target0, target1)
-    time.sleep(3)
+    time.sleep(abs(degree)/90*3)
     DriveStraight(0)
 
 def TestTurnInPlace():
-    TurnInPlace(90, 50)
+    TurnInPlace(90)
+    TurnInPlace(-90)
+    TurnInPlace(45)
+    TurnInPlace(-45)
 
 def TestDriveStraight():
     DriveStraight(20)
