@@ -12,7 +12,7 @@ CHAN1 = "\x01"
 NUM_OF_TARGETS = "\x02"
 
 # Account for slight differences of motor center points
-CENTER0 = 1479
+CENTER0 = 1479.25
 CENTER_DIFF = 2
 CENTER1 = CENTER0-CENTER_DIFF
 
