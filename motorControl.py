@@ -56,7 +56,8 @@ def DriveStraight(speed):
     
     SetMultiTarget(target0, target1)
     
-def TurnInPlace(degree, speed=100, sec_for_90_degree=1.4):
+def TurnInPlace(degree, speed=50, sec_for_90_degree=2.9):
+    # speed=100, sec_for_90_degree=1.4
     # Use the same center point for turning in place
     target0 = CENTER0 + speed if degree >= 0 else CENTER0 - speed
     target0 = int(target0 * 4) # convert to quarter micro-seconds
@@ -126,9 +127,9 @@ def TestTriangle():
     DriveStraight(0)
     
 #TestTriangle()
-TestSquare()
+#TestSquare()
 #TestTurnInPlace()
-#TestDriveStraight()
+TestDriveStraight()
 #Test360()
 #MiniTestDriveStraight()
 

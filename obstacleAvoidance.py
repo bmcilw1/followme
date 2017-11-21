@@ -23,8 +23,8 @@ CHAN1 = "\x01"
 NUM_OF_TARGETS = "\x02"
 
 # Account for slight differences of motor center points
-CENTER0 = 1479
-CENTER_DIFF = 4
+CENTER0 = 1479.25
+CENTER_DIFF = 2
 CENTER1 = CENTER0-CENTER_DIFF
 
 ser = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
@@ -67,7 +67,8 @@ def DriveStraight(speed):
     
     SetMultiTarget(target0, target1)
     
-def TurnInPlace(degree, speed=100, sec_for_90_degree=1.4):
+def TurnInPlace(degree, speed=50, sec_for_90_degree=2.9):
+    # speed=100, sec_for_90_degree=1.4
     # Use the same center point for turning in place
     target0 = CENTER0 + speed if degree >= 0 else CENTER0 - speed
     target0 = int(target0 * 4) # convert to quarter micro-seconds
@@ -105,13 +106,14 @@ while(True):
         irLDist[i] = distanceMetersIRL
         #print "There is an object ", distanceMetersIRL, "meters away LIR."
         
+        # the avgDist to the nearest obstacle straight ahead
         avgDist = reduce(lambda x, y: x + y, usDist) / float(len(usDist))
         #print "There is an object ", avgDist, "meters away."
         
         if avgDist < .1:
             TurnInPlace(45);
         else:
-            DriveStraight(100);
+            DriveStraight(500);
         
         i = 0 if len(usDist) else i + 1
         sleep(.001)

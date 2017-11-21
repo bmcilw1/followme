@@ -8,4 +8,5 @@ fi
 # Run specified script
 if [ -f /var/lib/cloud9/followme/motorControl.py ]; then
     sudo python /var/lib/cloud9/followme/obstacleAvoidance.py
+    #sudo python /var/lib/cloud9/followme/motorControl.py
 fi
