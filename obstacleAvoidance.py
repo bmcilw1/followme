@@ -81,15 +81,20 @@ def TurnInPlace(degree, speed=100, sec_for_90_degree=1.4):
     time.sleep(abs(degree)/90.0*sec_for_90_degree)
     DriveStraight(0)
 
-i = 5000
-while(i>0):
+# Smooth readings by taking the average value of several readings
+usDist = [0, 0, 0, 0, 0]
+irLDist = [0, 0, 0, 0, 0]
+i = 0;
+
+while(True):
         usonicVal=ADC.read(usonic)
         usonicVolt=usonicVal*1.8 # Convert to voltage
         #print "The ultrasonic voltage is: ", usonicVolt
         #distanceInches = usonicVolt / 0.0075 # convert to inches via manual tuning
         # linear response
         distanceMetersUS = usonicVolt*8 # convert to meters via manual tuning
-        print "There is an object ", distanceMetersUS, "meters away US."
+        usDist[i] = distanceMetersUS
+        #print "There is an object ", distanceMetersUS, "meters away US."
         
         irLVal=ADC.read(irL)
         irLVolt=irLVal*1.8
@@ -97,15 +102,19 @@ while(i>0):
         #print "The left IR voltage is: ", irLVolt
         # TODO: find formula for non-linear response
         distanceMetersIRL = 1/irLVolt # convert to meters via manual tuning
-        print "There is an object ", distanceMetersIRL, "meters away LIR."
+        irLDist[i] = distanceMetersIRL
+        #print "There is an object ", distanceMetersIRL, "meters away LIR."
         
-        if distanceMetersUS < .5:
-            DriveStraight(0);
+        avgDist = reduce(lambda x, y: x + y, usDist) / float(len(usDist))
+        #print "There is an object ", avgDist, "meters away."
+        
+        if avgDist < .1:
+            TurnInPlace(45);
         else:
-            DriveStraight(50);
-            
-        sleep(.1)
-        i -= 1
+            DriveStraight(100);
+        
+        i = 0 if len(usDist) else i + 1
+        sleep(.001)
 
 # Stop
 DriveStraight(0)
