@@ -16,9 +16,9 @@ IR_R="P9_38"
 IR_D="P9_37"
 
 # Sensor distance thresholds
-CLIFF_DELTA = .3 # Minimum sensitivity to cliffs
+CLIFF_DELTA = .4 # Minimum sensitivity to cliffs
 COLLISION_THRESHOLD = .4 # in meters
-TIME_PER_CYCLE = .001 # in seconds
+TIME_PER_CYCLE = .0001 # in seconds
 #TIME_PER_CYCLE = 1
 TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
 
@@ -119,10 +119,10 @@ def avgArray(a):
         
 # Smooth readings by taking the average value of several readings
 # Circular arrays to implement averaging
-usDist = [0, 0, 0, 0, 0, 0]
-irLDist = [0, 0, 0, 0, 0, 0]
-irRDist = [0, 0, 0, 0, 0, 0]
-irDDist = [0, 0, 0, 0, 0, 0]
+usDist = [0, 0, 0, 0]
+irLDist = [0, 0, 0, 0]
+irRDist = [0, 0, 0, 0]
+irDDist = [0, 0, 0, 0]
 startCtr = 0
 i = 0
 
