@@ -16,7 +16,7 @@ IR_R="P9_38"
 IR_D="P9_37"
 
 # Sensor distance thresholds
-CLIFF_DELTA = .05 # Minimum sensitivity to cliffs
+CLIFF_DELTA = .2 # Minimum sensitivity to cliffs
 COLLISION_THRESHOLD = .2 # in meters
 
 # Motor controller UART
@@ -27,11 +27,14 @@ START_SIG = "\xAA"
 CHAN0 = "\x00"
 CHAN1 = "\x01"
 NUM_OF_TARGETS = "\x02"
+TOP_SPEED = 700
 
 # Account for slight differences of motor center points
 CENTER0 = 1479.25
 CENTER_DIFF = 2
 CENTER1 = CENTER0-CENTER_DIFF
+
+TIME_PER_CYCLE = .0001
 
 ser = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
 ser.close()
@@ -57,7 +60,6 @@ def SetMultiTarget(target0, target1, device_id="\x0C", cmd = "\x1F"):
     ser.write(CHAN0)
     ser.write(target0)
     ser.write(target1)
-
 
 def DriveStraight(speed):
     # Use different center points for driving straight
@@ -92,7 +94,8 @@ def readUS(pin):
     usonicVal=ADC.read(pin)
     usonicVolt=usonicVal*1.8 # Convert to voltage
     
-    # linear response
+    # Convert to meters via manual tuning
+    # Mostly linear response
     distanceMetersUS = usonicVolt*8 # convert to meters via manual tuning
     return distanceMetersUS
 
@@ -159,7 +162,7 @@ while(True):
         startCtr = 0
     else:
         # We're free to go
-        DriveStraight(700)
+        DriveStraight(TOP_SPEED)
     
     # Increment counters
     i = 0 if i == len(usDist) - 1 else i + 1
@@ -167,7 +170,7 @@ while(True):
     
     # Delay until next cycle
     # this should be FAST to react to cliffs
-    sleep(.0001)
+    sleep(TIME_PER_CYCLE)
 
 # Stop
 DriveStraight(0)
