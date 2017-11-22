@@ -16,6 +16,11 @@ IR_D="P9_37"
 CLIFF_DELTA = .1
 COLLISION_THRESHOLD = .1
 
+# IR constants
+IR_M = .4
+IR_B = .79
+IR_DELTA = 10**-6
+
 # Smooth readings by taking the average value of several readings
 usDist = [0, 0, 0, 0, 0, 0, 0, 0]
 irLDist = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -38,30 +43,33 @@ def readIR(pin, usDist):
     # Convert to meters via manual tuning
     # Prevent divide by zero error add small delta
     # This equation only works for 1-5.5 meters distance
-    distanceMetersIR = 1/(irVolt + .0000001)
+    distanceMetersIR = (1/(irVolt + IR_DELTA) - IR_B) / IR_M
     return distanceMetersIR
+    
+def avgArray(a):
+    return reduce(lambda x, y: x + y, a) / float(len(a))
 
 while(True):
     usDist[i] = readUS(U_SONIC)
-    print "There is an object ", usDist[i], "meters away US."
+    #print "There is an object ", usDist[i], "meters away US."
     
     # the avgDist to the nearest obstacle straight ahead
     avgDistUS = reduce(lambda x, y: x + y, usDist) / float(len(usDist))
     #print "There is an object ", avgDist, "meters away."
     
     irLDist[i] = readIR(IR_L, avgDistUS)
-    print "There is an object ", irLDist[i], "meters away LIR."
+
     irRDist[i] = readIR(IR_R, avgDistUS)
     #print "There is an object ", irRDist[i], "meters away RIR."
     
     # Will always be less than a meter
     irDDist[i] = readIR(IR_D, .05)
-    print "There is an object ", irDDist[i], "meters away DIR."
+    #print "There is an object ", irDDist[i], "meters away DIR."
     # The avgDist for the old and new half of the down IR readings
     # If there is a sufficiently large gap assume cliff
     halfIrDDist = len(irDDist)/2
-    avgDistDIROld = reduce( lambda x, y: x + y, irDDist[: halfIrDDist] ) / float(halfIrDDist)
-    avgDistDIRNew = reduce( lambda x, y: x + y, irDDist[halfIrDDist :] ) / float(halfIrDDist)
+    avgDistDIROld = avgArray(irDDist[: halfIrDDist])
+    avgDistDIRNew = avgArray(irDDist[halfIrDDist :])
     
     #print "avgDistDIROld ", avgDistDIROld
     #print "avgDistDIRNew ", avgDistDIRNew
@@ -75,8 +83,9 @@ while(True):
         print "cliff"
         startCtr = 0
     else:
+        print "There is an object ", avgArray(irLDist) , "meters away LIR."
         print "go"
         
     i = 0 if i == len(usDist) - 1 else i + 1
     startCtr = startCtr if startCtr == len(usDist) - 1 else startCtr + 1
-    sleep(.5)
+    sleep(.1)

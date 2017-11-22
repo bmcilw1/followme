@@ -16,11 +16,16 @@ IR_R="P9_38"
 IR_D="P9_37"
 
 # Sensor distance thresholds
-CLIFF_DELTA = .5 # Minimum sensitivity to cliffs
+CLIFF_DELTA = .1 # Minimum sensitivity to cliffs
 COLLISION_THRESHOLD = .4 # in meters
 TIME_PER_CYCLE = .001 # in seconds
 #TIME_PER_CYCLE = 1
 TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
+
+# IR sensor constants
+IR_M = .4
+IR_B = .79
+IR_DELTA = 10**-6
 
 # Motor controller UART
 UART.setup("UART1") # P9_24
@@ -106,7 +111,7 @@ def readIR(pin, usDist):
     # Convert to meters via manual tuning
     # Prevent divide by zero error add small delta
     # This equation only works for 1-5.5 meters distance
-    distanceMetersIR = 1/(irVolt + .00000001)
+    distanceMetersIR = (1/(irVolt + IR_DELTA) - IR_B) / IR_M
     return distanceMetersIR
     
 def avgArray(a):
