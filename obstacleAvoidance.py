@@ -11,8 +11,8 @@ ADC.setup()
 
 usonic="P9_40"
 irL="P9_39"
-irR="P"
-irD="P"
+irR="P9_38"
+irD="P9_37"
 
 UART.setup("UART1") # P9_24
 
