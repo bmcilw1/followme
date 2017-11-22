@@ -159,7 +159,7 @@ while(True):
         # Check for this FIRST
         DriveStraight(-100)
         sleep(1)
-        TurnInPlace(-180)
+        TurnInPlace(-180, 100, 1.4)
         startCtr = 0
     elif avgDistUS < COLLISION_THRESHOLD:
         # Avoid standing obstacle: choose the right
