@@ -16,8 +16,11 @@ IR_R="P9_38"
 IR_D="P9_37"
 
 # Sensor distance thresholds
-CLIFF_DELTA = .2 # Minimum sensitivity to cliffs
-COLLISION_THRESHOLD = .3 # in meters
+CLIFF_DELTA = .5 # Minimum sensitivity to cliffs
+COLLISION_THRESHOLD = .4 # in meters
+TIME_PER_CYCLE = .001 # in seconds
+#TIME_PER_CYCLE = 1
+TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
 
 # Motor controller UART
 UART.setup("UART1") # P9_24
@@ -27,15 +30,11 @@ START_SIG = "\xAA"
 CHAN0 = "\x00"
 CHAN1 = "\x01"
 NUM_OF_TARGETS = "\x02"
-TOP_SPEED = 700
 
 # Account for slight differences of motor center points
 CENTER0 = 1479.25
 CENTER_DIFF = 2
 CENTER1 = CENTER0-CENTER_DIFF
-
-TIME_PER_CYCLE = .0001
-#TIME_PER_CYCLE = 1
 
 ser = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
 ser.close()
