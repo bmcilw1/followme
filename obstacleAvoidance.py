@@ -16,7 +16,7 @@ IR_R="P9_38"
 IR_D="P9_37"
 
 # Sensor distance thresholds
-CLIFF_DELTA = .1
+CLIFF_DELTA = .05 # Minimum sensitivity to cliffs
 COLLISION_THRESHOLD = .2 # in meters
 
 # Motor controller UART
@@ -91,6 +91,7 @@ def TurnInPlace(degree, speed=50, sec_for_90_degree=2.9):
 def readUS(pin):
     usonicVal=ADC.read(pin)
     usonicVolt=usonicVal*1.8 # Convert to voltage
+    
     # linear response
     distanceMetersUS = usonicVolt*8 # convert to meters via manual tuning
     return distanceMetersUS
@@ -165,6 +166,7 @@ while(True):
     startCtr = startCtr if startCtr == len(usDist) - 1 else startCtr + 1
     
     # Delay until next cycle
+    # this should be FAST to react to cliffs
     sleep(.0001)
 
 # Stop
