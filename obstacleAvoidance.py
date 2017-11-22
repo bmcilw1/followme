@@ -16,7 +16,7 @@ IR_R="P9_38"
 IR_D="P9_37"
 
 # Sensor distance thresholds
-CLIFF_DELTA = .1 # Minimum sensitivity to cliffs
+CLIFF_DELTA = .3 # Minimum sensitivity to cliffs
 COLLISION_THRESHOLD = .4 # in meters
 TIME_PER_CYCLE = .001 # in seconds
 #TIME_PER_CYCLE = 1
