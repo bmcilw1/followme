@@ -17,7 +17,7 @@ IR_D="P9_37"
 
 # Sensor distance thresholds
 CLIFF_DELTA = .2 # Minimum sensitivity to cliffs
-COLLISION_THRESHOLD = .2 # in meters
+COLLISION_THRESHOLD = .3 # in meters
 
 # Motor controller UART
 UART.setup("UART1") # P9_24
@@ -35,6 +35,7 @@ CENTER_DIFF = 2
 CENTER1 = CENTER0-CENTER_DIFF
 
 TIME_PER_CYCLE = .0001
+#TIME_PER_CYCLE = 1
 
 ser = serial.Serial(port = "/dev/ttyO1", baudrate=9600)
 ser.close()
@@ -96,7 +97,7 @@ def readUS(pin):
     
     # Convert to meters via manual tuning
     # Mostly linear response
-    distanceMetersUS = usonicVolt*8 # convert to meters via manual tuning
+    distanceMetersUS = usonicVolt*6 # convert to meters via manual tuning
     return distanceMetersUS
 
 def readIR(pin, usDist):
@@ -114,10 +115,10 @@ def avgArray(a):
         
 # Smooth readings by taking the average value of several readings
 # Circular arrays to implement averaging
-usDist = [0, 0, 0, 0, 0, 0, 0, 0]
-irLDist = [0, 0, 0, 0, 0, 0, 0, 0]
-irRDist = [0, 0, 0, 0, 0, 0, 0, 0]
-irDDist = [0, 0, 0, 0, 0, 0, 0, 0]
+usDist = [0, 0, 0, 0, 0, 0]
+irLDist = [0, 0, 0, 0, 0, 0]
+irRDist = [0, 0, 0, 0, 0, 0]
+irDDist = [0, 0, 0, 0, 0, 0]
 startCtr = 0
 i = 0
 
@@ -145,7 +146,7 @@ while(True):
     avgDistDIRNew = avgArray(irDDist[halfIrDDist :])
     
     cliff = True if abs(avgDistDIRNew - avgDistDIROld) > CLIFF_DELTA else False
-        
+    
     if startCtr < len(usDist) - 1:
         # Wait until sufficent samples are taken
         DriveStraight(0)
