@@ -34,9 +34,7 @@ IR_M = .4
 IR_B = .79
 IR_DELTA = 10**-6
 
-# Minimum ultrasonic value after which IR distance will 
-# INCREASE when object becomes closer
-IR_FLIP_THRESHOLD = .45
+# Minimum number of cycles to keep turning the same direction if not yet free
 MIN_TURN_CYCLES = 6
 
 # US sensor constants
