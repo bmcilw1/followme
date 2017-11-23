@@ -27,6 +27,7 @@ COLLISION_THRESHOLD = 1 # smaller: .5 # in meters
 TIME_PER_CYCLE = 10**-3 # debugging: .5 # in seconds
 TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
 CLIFF_DELTA = .5 # Minimum sensitivity to declare a cliff
+DEGREES_TURN_COLLISION_AVOIDANCE = 22.5 # Degrees to turn on obstacle < threshold
 
 # IR sensor constants
 IR_M = .4
@@ -41,7 +42,7 @@ US_B = -5.67*10**-3
 CIRCULAR_ARRAY_LENGTH = 6
 
 # Account for slight differences of motor center points
-CENTER0 = 1479.25
+CENTER0 = 1479.5
 CENTER_DIFF = 2
 CENTER1 = CENTER0-CENTER_DIFF
 DEFAULT_TURN_SPEED = 100 # slower: 50
@@ -173,7 +174,7 @@ while(True):
         startCtr = 0
     elif nearestObject < COLLISION_THRESHOLD:
         # Avoid standing obstacle: choose the right
-        TurnInPlace(45)
+        TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE)
         startCtr = 0
     else:
         # We're free to go
