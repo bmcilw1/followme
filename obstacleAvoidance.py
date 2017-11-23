@@ -23,7 +23,7 @@ from time import sleep
 # Tunable parametes
 
 # Sensor distance thresholds
-COLLISION_THRESHOLD = 1 # smaller: .5 # in meters
+COLLISION_THRESHOLD = .8 # smaller: .5 # in meters
 TIME_PER_CYCLE = 10**-3 # debugging: .5 # in seconds
 TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
 CLIFF_DELTA = .5 # Minimum sensitivity to declare a cliff
@@ -114,7 +114,6 @@ def TurnInPlace(degree, speed=DEFAULT_TURN_SPEED,
     
     SetMultiTarget(target0, target1)
     time.sleep(abs(degree)/90.0*sec_for_90_degree)
-    DriveStraight(0)
 
 def readUS(pin):
     usonicVal=ADC.read(pin)
@@ -187,9 +186,9 @@ while(True):
         # If we've just turned choose the same direction
         if (lastTurnCtr > MIN_TURN_CYCLES):
             if (avgirL < avgirR):
-                lastTurnDirection = -1
-            else:
                 lastTurnDirection = 1
+            else:
+                lastTurnDirection = -1
             
         # Right is positive, left negative
         TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE * lastTurnDirection)
