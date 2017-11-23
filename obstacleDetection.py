@@ -21,6 +21,10 @@ IR_M = .4
 IR_B = .79
 IR_DELTA = 10**-6
 
+# US constants
+US_M = .142
+US_B = -5.67*10**-3
+
 # Smooth readings by taking the average value of several readings
 usDist = [0, 0, 0, 0, 0, 0, 0, 0]
 irLDist = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -33,10 +37,10 @@ def readUS(pin):
     usonicVal=ADC.read(pin)
     usonicVolt=usonicVal*1.8 # Convert to voltage
     # linear response
-    distanceMetersUS = usonicVolt*8 # convert to meters via manual tuning
+    distanceMetersUS = (usonicVolt - US_B) / US_M # convert to meters via manual tuning
     return distanceMetersUS
 
-def readIR(pin, usDist):
+def readIR(pin):
     irVal=ADC.read(pin)
     irVolt=irVal*1.8 # Convert to voltage
         
@@ -55,16 +59,13 @@ while(True):
     
     # the avgDist to the nearest obstacle straight ahead
     avgDistUS = reduce(lambda x, y: x + y, usDist) / float(len(usDist))
-    #print "There is an object ", avgDist, "meters away."
     
-    irLDist[i] = readIR(IR_L, avgDistUS)
+    irLDist[i] = readIR(IR_L)
 
-    irRDist[i] = readIR(IR_R, avgDistUS)
-    #print "There is an object ", irRDist[i], "meters away RIR."
+    irRDist[i] = readIR(IR_R)
     
-    # Will always be less than a meter
-    irDDist[i] = readIR(IR_D, .05)
-    #print "There is an object ", irDDist[i], "meters away DIR."
+    irDDist[i] = readIR(IR_D)
+    
     # The avgDist for the old and new half of the down IR readings
     # If there is a sufficiently large gap assume cliff
     halfIrDDist = len(irDDist)/2
@@ -75,6 +76,9 @@ while(True):
     #print "avgDistDIRNew ", avgDistDIRNew
     cliff = True if abs(avgDistDIRNew - avgDistDIROld) > CLIFF_DELTA else False
     
+    print "There is an object ", avgArray(irLDist) , "meters away LIR."
+    print "There is an object ", avgArray(usDist) , "meters away US."
+    
     if startCtr < len(usDist) - 1:
         print "startup"
     elif avgDistUS < COLLISION_THRESHOLD:
@@ -83,7 +87,6 @@ while(True):
         print "cliff"
         startCtr = 0
     else:
-        print "There is an object ", avgArray(irLDist) , "meters away LIR."
         print "go"
         
     i = 0 if i == len(usDist) - 1 else i + 1
