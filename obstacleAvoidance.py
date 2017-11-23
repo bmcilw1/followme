@@ -186,24 +186,25 @@ while(True):
     
     elif nearestObject < COLLISION_THRESHOLD:
         # Avoid standing obstacle
-        direction = 1
-        
         # If we've just turned choose the same direction
         if (lastTurnCtr > MIN_TURN_CYCLES):
             if (avgUS < IR_FLIP_THRESHOLD):
                 # IR readings are flipped. Now, if one reports further away is actually closer
                 if (avgirL > avgirR):
-                    direction = -1
+                    lastTurnDirection = -1
+                else:
+                    lastTurnDirection = 1
             else:
                 # Polarity of IR readings are accurate
                 if (avgirL < avgirR):
-                    direction = -1
+                    lastTurnDirection = -1
+                else:
+                    lastTurnDirection = 1
             
         # Right is positive, left negative
-        TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE * direction)
+        TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE * lastTurnDirection)
         
-        # Save last turn direction, reset counters
-        lastTurnDirection = direction
+        # Reset counters
         lastTurnCtr = 0
         startCtr = 0
     
