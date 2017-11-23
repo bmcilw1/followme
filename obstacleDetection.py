@@ -14,7 +14,7 @@ IR_L="P9_39"
 IR_R="P9_38"
 IR_D="P9_37"
 CLIFF_DELTA = .1
-COLLISION_THRESHOLD = .1
+COLLISION_THRESHOLD = 1
 
 # IR constants
 IR_M = .4
@@ -24,6 +24,10 @@ IR_DELTA = 10**-6
 # US constants
 US_M = .142
 US_B = -5.67*10**-3
+
+# Minimum ultrasonic value after which IR distance will 
+# INCREASE when object becomes closer
+IR_FLIP_THRESHOLD = .45
 
 # Smooth readings by taking the average value of several readings
 usDist = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -76,12 +80,32 @@ while(True):
     #print "avgDistDIRNew ", avgDistDIRNew
     cliff = True if abs(avgDistDIRNew - avgDistDIROld) > CLIFF_DELTA else False
     
-    print "There is an object ", avgArray(irLDist) , "meters away LIR."
-    print "There is an object ", avgArray(usDist) , "meters away US."
+    avgUS = avgArray(usDist)
+    avgirL = avgArray(irLDist)
+    avgirR = avgArray(irRDist)
+    nearestObject = min(avgUS, avgirL, avgirR)
+    print "object ", nearestObject, " meters away"
     
     if startCtr < len(usDist) - 1:
         print "startup"
     elif avgDistUS < COLLISION_THRESHOLD:
+        print "avgUS ", avgUS
+        print "avgirL ", avgirL
+        print "avgirR ", avgirR
+        
+        if (avgUS < IR_FLIP_THRESHOLD):
+            # IR readings are flipped. Now, if one reports further away is actually closer
+            if (avgirL < avgirR):
+                print "turn right"
+            else:
+                print "turn left"
+        else:
+            # Polarity of IR readings are accurate
+            if (avgirR < avgirL):
+                print "turn left"
+            else:
+                print "turn right"
+        
         print "stop"
     elif cliff:
         print "cliff"

@@ -34,6 +34,10 @@ IR_M = .4
 IR_B = .79
 IR_DELTA = 10**-6
 
+# Minimum ultrasonic value after which IR distance will 
+# INCREASE when object becomes closer
+IR_FLIP_THRESHOLD = .45
+
 # US sensor constants
 US_M = .142
 US_B = -5.67*10**-3
@@ -159,12 +163,16 @@ while(True):
     
     cliff = True if abs(avgDistDIRNew - avgDistDIROld) > CLIFF_DELTA else False
     
-    nearestObject = min(avgArray(usDist), avgArray(irLDist), avgArray(irRDist))
+    avgUS = avgArray(usDist)
+    avgirL = avgArray(irLDist)
+    avgirR = avgArray(irRDist)
+    nearestObject = min(avgUS, avgirL, avgirR)
     #print "object ", nearestObject, " meters away"
     
     if startCtr < len(usDist) - 1:
         # Wait until sufficent samples are taken
         DriveStraight(0)
+    
     elif cliff:
         # Avoid cliff: back up and turn around
         # Check for this FIRST
@@ -172,10 +180,23 @@ while(True):
         sleep(1)
         TurnInPlace(-180, 100, 1.4) # Fast turn
         startCtr = 0
+    
     elif nearestObject < COLLISION_THRESHOLD:
-        # Avoid standing obstacle: choose the right
-        TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE)
+        # Avoid standing obstacle
+        direction = 1
+        if (avgUS < IR_FLIP_THRESHOLD):
+            # IR readings are flipped. Now, if one reports further away is actually closer
+            if (avgirL > avgirR):
+                direction = -1
+        else:
+            # Polarity of IR readings are accurate
+            if (avgirR < avgirL):
+                direction = -1
+        
+        # Right is positive, left negative
+        TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE * direction)
         startCtr = 0
+    
     else:
         # We're free to go
         DriveStraight(TOP_SPEED)
