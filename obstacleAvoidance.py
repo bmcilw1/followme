@@ -37,6 +37,7 @@ IR_DELTA = 10**-6
 # Minimum ultrasonic value after which IR distance will 
 # INCREASE when object becomes closer
 IR_FLIP_THRESHOLD = .45
+MIN_TURN_CYCLES = 4
 
 # US sensor constants
 US_M = .142
@@ -188,7 +189,7 @@ while(True):
         direction = 1
         
         # If we've just turned choose the same direction
-        if (lastTurnCtr > 2):
+        if (lastTurnCtr > MIN_TURN_CYCLES):
             if (avgUS < IR_FLIP_THRESHOLD):
                 # IR readings are flipped. Now, if one reports further away is actually closer
                 if (avgirL > avgirR):
@@ -199,10 +200,11 @@ while(True):
                     direction = -1
             
         # Right is positive, left negative
-        # Save last turn direction
+        TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE * direction)
+        
+        # Save last turn direction, reset counters
         lastTurnDirection = direction
         lastTurnCtr = 0
-        TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE * direction)
         startCtr = 0
     
     else:
