@@ -146,6 +146,8 @@ irRDist = [0] * CIRCULAR_ARRAY_LENGTH
 irDDist = [0] * CIRCULAR_ARRAY_LENGTH
 startCtr = 0
 i = 0
+lastTurnDirection = 1
+lastTurnCtr = 0
 
 # Main loop of execution
 while(True):
@@ -184,16 +186,22 @@ while(True):
     elif nearestObject < COLLISION_THRESHOLD:
         # Avoid standing obstacle
         direction = 1
-        if (avgUS < IR_FLIP_THRESHOLD):
-            # IR readings are flipped. Now, if one reports further away is actually closer
-            if (avgirL > avgirR):
-                direction = -1
-        else:
-            # Polarity of IR readings are accurate
-            if (avgirR < avgirL):
-                direction = -1
         
+        # If we've just turned choose the same direction
+        if (lastTurnCtr > 2):
+            if (avgUS < IR_FLIP_THRESHOLD):
+                # IR readings are flipped. Now, if one reports further away is actually closer
+                if (avgirL > avgirR):
+                    direction = -1
+            else:
+                # Polarity of IR readings are accurate
+                if (avgirL < avgirR):
+                    direction = -1
+            
         # Right is positive, left negative
+        # Save last turn direction
+        lastTurnDirection = direction
+        lastTurnCtr = 0
         TurnInPlace(DEGREES_TURN_COLLISION_AVOIDANCE * direction)
         startCtr = 0
     
@@ -204,6 +212,7 @@ while(True):
     # Increment counters
     i = 0 if i == len(usDist) - 1 else i + 1
     startCtr = startCtr if startCtr == len(usDist) - 1 else startCtr + 1
+    lastTurnCtr += 1
     
     # Delay until next cycle
     # this should be FAST to react to cliffs
