@@ -35,7 +35,7 @@ IR_B = .79
 IR_DELTA = 10**-6
 
 # Minimum number of cycles to keep turning the same direction if not yet free
-MIN_TURN_CYCLES = 6
+MIN_TURN_CYCLES = 16
 
 # US sensor constants
 US_M = .142
@@ -156,13 +156,14 @@ while(True):
     irDDist[i] = readIR(IR_D)
     
     # The avgDist for the old and new half of the down IR readings
-    # If there is a sufficiently large gap assume cliff
     halfIrDDist = len(irDDist)/2
     avgDistDIROld = avgArray(irDDist[: halfIrDDist])
     avgDistDIRNew = avgArray(irDDist[halfIrDDist :])
     
+    # If there is a sufficiently large gap assume cliff
     cliff = True if abs(avgDistDIRNew - avgDistDIROld) > CLIFF_DELTA else False
     
+    # Use simple average to filter outliers
     avgUS = avgArray(usDist)
     avgirL = avgArray(irLDist)
     avgirR = avgArray(irRDist)
@@ -170,7 +171,7 @@ while(True):
     #print "object ", nearestObject, " meters away"
     
     if startCtr < len(usDist) - 1:
-        # Wait until sufficent samples are taken
+        # Don't go until we know the way is clear
         DriveStraight(0)
     
     elif cliff:
