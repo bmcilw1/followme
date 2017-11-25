@@ -24,10 +24,10 @@ from collections import deque
 # Tunable parametes
 
 # Sensor distance thresholds
-COLLISION_THRESHOLD = .8 # smaller: .5 # in meters
+COLLISION_THRESHOLD = 1 # smaller: .5 # in meters
 TIME_PER_CYCLE = 10**-4 # debugging: .5 # in seconds
-TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
-CLIFF_DELTA = .7 # Minimum sensitivity to declare a cliff
+TOP_SPEED = 1000 #500 # in micro-seconds (PWM signal to send to servos)
+CLIFF_DELTA = .9 # Minimum sensitivity to declare a cliff
 DEGREES_TURN_COLLISION_AVOIDANCE = 22.5 # Degrees to turn on obstacle < threshold
 
 # IR sensor constants
