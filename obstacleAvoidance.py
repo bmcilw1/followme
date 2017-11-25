@@ -25,6 +25,7 @@ from collections import deque
 
 # Sensor distance thresholds
 COLLISION_THRESHOLD = 1 # smaller: .5 # in meters
+BACKUP_THRESHOLD = .1 # in meters
 TIME_PER_CYCLE = 10**-4 # debugging: .5 # in seconds
 TOP_SPEED = 1000 #500 # in micro-seconds (PWM signal to send to servos)
 CLIFF_DELTA = .9 # Minimum sensitivity to declare a cliff
@@ -187,12 +188,16 @@ while(True):
         # Avoid cliff: back up and turn around
         # Check for this FIRST
         DriveStraight(-100)
-        sleep(1)
+        sleep(1.5)
         TurnInPlace(-180, 100, 1.4) # Fast turn
         startCtr = 0
     
     elif nearestObject < COLLISION_THRESHOLD:
-        # Avoid standing obstacle
+        # Too close: back up first
+        if (nearestObject < BACKUP_THRESHOLD):
+            DriveStraight(-100)
+            sleep(1.5)
+        
         # If we've just turned choose the same direction
         if (lastTurnCtr > MIN_TURN_CYCLES):
             if (avgirL < avgirR):
