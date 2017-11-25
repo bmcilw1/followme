@@ -6,6 +6,7 @@ import serial
 import time
 import math
 from time import sleep
+from collections import deque
 
 ADC.setup()
 
@@ -15,6 +16,9 @@ IR_R="P9_38"
 IR_D="P9_37"
 CLIFF_DELTA = .1
 COLLISION_THRESHOLD = 1
+
+# Number of past samples to average per cycle
+CIRCULAR_ARRAY_LENGTH = 6
 
 # IR constants
 IR_M = .4
@@ -30,10 +34,10 @@ US_B = -5.67*10**-3
 IR_FLIP_THRESHOLD = .45
 
 # Smooth readings by taking the average value of several readings
-usDist = [0, 0, 0, 0, 0, 0, 0, 0]
-irLDist = [0, 0, 0, 0, 0, 0, 0, 0]
-irRDist = [0, 0, 0, 0, 0, 0, 0, 0]
-irDDist = [0, 0, 0, 0, 0, 0, 0, 0]
+usDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
+irLDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
+irRDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
+irDDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
 startCtr = 0
 i = 0
 
@@ -58,23 +62,26 @@ def avgArray(a):
     return reduce(lambda x, y: x + y, a) / float(len(a))
 
 while(True):
-    usDist[i] = readUS(U_SONIC)
-    #print "There is an object ", usDist[i], "meters away US."
+    # Remove oldest element from right
+    usDist.pop()
+    irLDist.pop()
+    irRDist.pop()
+    irDDist.pop()
+    
+    # Add new readings on left
+    usDist.appendleft(readUS(U_SONIC))
+    irLDist.appendleft(readIR(IR_L))
+    irRDist.appendleft(readIR(IR_R))
+    irDDist.appendleft(readIR(IR_D))
     
     # the avgDist to the nearest obstacle straight ahead
     avgDistUS = reduce(lambda x, y: x + y, usDist) / float(len(usDist))
     
-    irLDist[i] = readIR(IR_L)
-
-    irRDist[i] = readIR(IR_R)
-    
-    irDDist[i] = readIR(IR_D)
-    
     # The avgDist for the old and new half of the down IR readings
     # If there is a sufficiently large gap assume cliff
     halfIrDDist = len(irDDist)/2
-    avgDistDIROld = avgArray(irDDist[: halfIrDDist])
-    avgDistDIRNew = avgArray(irDDist[halfIrDDist :])
+    avgDistDIROld = avgArray(list(irDDist)[: halfIrDDist])
+    avgDistDIRNew = avgArray(list(irDDist)[halfIrDDist :])
     
     #print "avgDistDIROld ", avgDistDIROld
     #print "avgDistDIRNew ", avgDistDIRNew
@@ -86,27 +93,22 @@ while(True):
     nearestObject = min(avgUS, avgirL, avgirR)
     print "object ", nearestObject, " meters away"
     
+    print "usDist ", usDist
+    
     if startCtr < len(usDist) - 1:
         print "startup"
     elif avgDistUS < COLLISION_THRESHOLD:
+        '''
         print "avgUS ", avgUS
         print "avgirL ", avgirL
         print "avgirR ", avgirR
+        '''
         
-        if (avgUS < IR_FLIP_THRESHOLD):
-            # IR readings are flipped. Now, if one reports further away is actually closer
-            if (avgirL < avgirR):
-                print "turn right"
-            else:
-                print "turn left"
+        if (avgirL < avgirR):
+            print "turn right"
         else:
-            # Polarity of IR readings are accurate
-            if (avgirR < avgirL):
-                print "turn left"
-            else:
-                print "turn right"
-        
-        print "stop"
+            print "turn left"
+    
     elif cliff:
         print "cliff"
         startCtr = 0

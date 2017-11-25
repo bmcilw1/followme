@@ -138,10 +138,10 @@ def avgArray(a):
         
 # Smooth readings by taking the average value of several readings
 # Circular arrays of length CIRCULAR_ARRAY_LENGTH to implement averaging
-usDist = [0] * CIRCULAR_ARRAY_LENGTH
-irLDist = [0] * CIRCULAR_ARRAY_LENGTH
-irRDist = [0] * CIRCULAR_ARRAY_LENGTH
-irDDist = [0] * CIRCULAR_ARRAY_LENGTH
+usDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
+irLDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
+irRDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
+irDDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
 startCtr = 0
 i = 0
 lastTurnDirection = 1
@@ -149,16 +149,22 @@ lastTurnCtr = 0
 
 # Main loop of execution
 while(True):
-    # Take sensor readings
-    usDist[i] = readUS(U_SONIC)
-    irLDist[i] = readIR(IR_L)
-    irRDist[i] = readIR(IR_R)
-    irDDist[i] = readIR(IR_D)
+    # Remove oldest element from right
+    usDist.pop()
+    irLDist.pop()
+    irRDist.pop()
+    irDDist.pop()
+    
+    # Add new readings on left
+    usDist.appendleft(readUS(U_SONIC))
+    irLDist.appendleft(readIR(IR_L))
+    irRDist.appendleft(readIR(IR_R))
+    irDDist.appendleft(readIR(IR_D))
     
     # The avgDist for the old and new half of the down IR readings
     halfIrDDist = len(irDDist)/2
-    avgDistDIROld = avgArray(irDDist[: halfIrDDist])
-    avgDistDIRNew = avgArray(irDDist[halfIrDDist :])
+    avgDistDIROld = avgArray(list(irDDist)[: halfIrDDist])
+    avgDistDIRNew = avgArray(list(irDDist)[halfIrDDist :])
     
     # If there is a sufficiently large gap assume cliff
     cliff = True if abs(avgDistDIRNew - avgDistDIROld) > CLIFF_DELTA else False
