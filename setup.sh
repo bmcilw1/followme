@@ -12,5 +12,5 @@ if [ ! -f /etc/systemd/senior_design.service ]; then
 fi
 
 sudo systemctl daemon-reload
-sudo systemctl enable senior_design.service
+sudo systemctl enable /etc/systemd/senior_design.service
 sudo systemctl start senior_design.service
