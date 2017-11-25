@@ -18,6 +18,7 @@ import serial
 import time
 import math
 from time import sleep
+from collections import deque
 
 ################################################################################
 # Tunable parametes
