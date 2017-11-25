@@ -25,7 +25,7 @@ from collections import deque
 
 # Sensor distance thresholds
 COLLISION_THRESHOLD = 1 # smaller: .5 # in meters
-BACKUP_THRESHOLD = .1 # in meters
+BACKUP_THRESHOLD = .2 # in meters
 TIME_PER_CYCLE = 10**-4 # debugging: .5 # in seconds
 TOP_SPEED = 1000 #500 # in micro-seconds (PWM signal to send to servos)
 CLIFF_DELTA = .9 # Minimum sensitivity to declare a cliff
