@@ -45,7 +45,7 @@ US_B = -5.67*10**-3
 # Number of past samples to average per cycle
 FRONT_IR_AVG_LEN = 6
 FRONT_US_AVG_LEN = 6
-DOWN_IR_AVG_LEN = 4
+DOWN_IR_AVG_LEN = 2
 
 # Account for slight differences of motor center points
 CENTER0 = 1479.5
