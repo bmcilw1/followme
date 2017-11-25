@@ -27,7 +27,7 @@ from collections import deque
 COLLISION_THRESHOLD = .8 # smaller: .5 # in meters
 TIME_PER_CYCLE = 10**-4 # debugging: .5 # in seconds
 TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
-CLIFF_DELTA = .5 # Minimum sensitivity to declare a cliff
+CLIFF_DELTA = .7 # Minimum sensitivity to declare a cliff
 DEGREES_TURN_COLLISION_AVOIDANCE = 22.5 # Degrees to turn on obstacle < threshold
 
 # IR sensor constants
@@ -45,7 +45,7 @@ US_B = -5.67*10**-3
 # Number of past samples to average per cycle
 FRONT_IR_AVG_LEN = 6
 FRONT_US_AVG_LEN = 6
-DOWN_IR_AVG_LEN = 6
+DOWN_IR_AVG_LEN = 4
 
 # Account for slight differences of motor center points
 CENTER0 = 1479.5
