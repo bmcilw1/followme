@@ -25,7 +25,7 @@ from collections import deque
 
 # Sensor distance thresholds
 COLLISION_THRESHOLD = .8 # smaller: .5 # in meters
-TIME_PER_CYCLE = 10**-3 # debugging: .5 # in seconds
+TIME_PER_CYCLE = 10**-4 # debugging: .5 # in seconds
 TOP_SPEED = 500 # in micro-seconds (PWM signal to send to servos)
 CLIFF_DELTA = .5 # Minimum sensitivity to declare a cliff
 DEGREES_TURN_COLLISION_AVOIDANCE = 22.5 # Degrees to turn on obstacle < threshold
@@ -43,7 +43,9 @@ US_M = .142
 US_B = -5.67*10**-3
 
 # Number of past samples to average per cycle
-CIRCULAR_ARRAY_LENGTH = 6
+FRONT_IR_AVG_LEN = 6
+FRONT_US_AVG_LEN = 6
+DOWN_IR_AVG_LEN = 4
 
 # Account for slight differences of motor center points
 CENTER0 = 1479.5
@@ -139,10 +141,10 @@ def avgArray(a):
         
 # Smooth readings by taking the average value of several readings
 # Circular arrays of length CIRCULAR_ARRAY_LENGTH to implement averaging
-usDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
-irLDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
-irRDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
-irDDist = deque([0] * CIRCULAR_ARRAY_LENGTH)
+usDist = deque([0] * FRONT_US_AVG_LEN)
+irLDist = deque([0] * FRONT_IR_AVG_LEN)
+irRDist = deque([0] * FRONT_IR_AVG_LEN)
+irDDist = deque([0] * DOWN_IR_AVG_LEN)
 startCtr = 0
 i = 0
 lastTurnDirection = 1
